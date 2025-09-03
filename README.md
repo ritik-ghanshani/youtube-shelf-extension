@@ -1,6 +1,6 @@
 # YouTube Shelf Chrome Extension
 
-A simple Chrome extension to save YouTube videos to a local, in-browser shelf for later viewing, including the ability to resume from a specific timestamp.
+A simple Chrome extension to save YouTube videos to a local, in-browser shelf for later viewing, including the ability to resume from a specific timestamp. This extension was "vibe coded" with Gemini.
 
 ## Features
 
@@ -12,6 +12,15 @@ A simple Chrome extension to save YouTube videos to a local, in-browser shelf fo
     *   Access your full shelf via a dedicated icon button in the YouTube header (next to notifications).
 *   **In-Browser Shelf:** View all your shelved videos in a clean, YouTube-like interface within a modal overlay.
 *   **Local Storage:** All data is stored securely in your browser's IndexedDB; no cloud sync or external APIs are used.
+
+## Installation (GitHub Release)
+
+The easiest way to install the extension is to download the latest release:
+
+1.  Go to the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases) of this repository.
+2.  Download the `extension.zip` file from the latest release.
+3.  Unzip the downloaded file.
+4.  Follow the "Load Unpacked Extension" steps below, selecting the unzipped folder.
 
 ## Installation (Load Unpacked Extension)
 

@@ -1,0 +1,44 @@
+name: Create Extension Release
+
+on:
+  push:
+    branches:
+      - main # Trigger on push to main for easy testing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Get extension version from manifest.json
+      id: get_version
+      run: echo "VERSION=$(jq -r .version manifest.json)" >> $GITHUB_OUTPUT
+
+    - name: Zip extension files
+      run: |
+        # Exclude .git, .github, README.md, LICENSE, and .gemini from the zip
+        zip -r extension.zip . -x ".git/*" ".github/*" "README.md" "LICENSE" ".gemini"
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        name: Release v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          Automated release of YouTube Shelf Chrome Extension.
+          
+          **Installation:**
+          1. Download `extension.zip` from the assets below.
+          2. Unzip the file.
+          3. Open Chrome, go to `chrome://extensions`.
+          4. Enable "Developer mode".
+          5. Click "Load unpacked" and select the unzipped folder.
+        draft: false
+        prerelease: false
+        files: extension.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
