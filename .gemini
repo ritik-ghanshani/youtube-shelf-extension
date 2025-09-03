@@ -1,0 +1,21 @@
+# Gemini context file for YouTube Shelf Chrome Extension
+
+## Project Summary:
+This is a Chrome extension named "YouTube Shelf". Its purpose is to save YouTube videos to a local, in-browser IndexedDB, allowing users to resume watching from a specific timestamp.
+
+## Key Features Implemented:
+- **Video Saving:** "Shelf" button on video page to add/remove videos.
+- **Timestamp Saving:** Saves current video timestamp.
+- **Dynamic Timestamp Updates:** Automatically updates timestamp every 10 seconds while a shelved video is playing.
+- **Shelf Access:** Icon button in YouTube header opens a modal with the list of shelved videos.
+- **Local Storage:** Uses IndexedDB for local storage.
+- **SPA Navigation Handling:** Robustly handles in-page navigation on YouTube.
+
+## Current State:
+- All core features are implemented and confirmed working.
+- UI elements (buttons, modal) are integrated and functional.
+- Project files (README.md, LICENSE) are generated.
+- Git repository initialized with initial commit.
+
+## Next Steps (if any):
+- User to provide further feature requests or modifications.
