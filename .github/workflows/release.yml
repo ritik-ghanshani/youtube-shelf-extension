@@ -110,8 +110,7 @@ jobs:
       - name: Submit to AMO (Listed Channel)
         run: |
           XPI_FILE=$(find web-ext-artifacts -name "*.xpi")
-          web-ext sign \
-            --source-dir .
+                    web-ext sign \
             --xpi-file "$XPI_FILE"
             --api-key "${{ secrets.AMO_API_KEY }}"
             --api-secret "${{ secrets.AMO_API_SECRET }}"
