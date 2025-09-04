@@ -41,7 +41,7 @@ jobs:
           name: source-code
 
       - name: Install web-ext
-        run: npm install -g web-ext
+        run: npm install -g web-ext@latest
 
       - name: Sign Firefox Addon
         run: >-
@@ -106,7 +106,7 @@ jobs:
           path: web-ext-artifacts
 
       - name: Install web-ext
-        run: npm install -g web-ext
+        run: npm install -g web-ext@latest
 
       - name: Submit to AMO
         run: |
