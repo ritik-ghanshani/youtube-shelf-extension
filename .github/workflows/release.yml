@@ -48,7 +48,7 @@ jobs:
           --api-key "${{ secrets.AMO_API_KEY }}"
           --api-secret "${{ secrets.AMO_API_SECRET }}"
           --channel unlisted
-          --timeout 30000 # Short timeout, as this should be quick
+          --timeout 300000 # Increased timeout for unlisted signing
 
       - name: Upload signed unlisted extension artifact
         uses: actions/upload-artifact@v4
