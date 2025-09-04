@@ -20,7 +20,6 @@ jobs:
 
       - name: Update manifest version
         run: |
-          # Use jq to edit the json file inplace
           jq --arg ver "${{ steps.get_version.outputs.VERSION }}" '.version = $ver' manifest.json > tmp.$$.json && mv tmp.$$.json manifest.json
 
       - name: Upload source code artifact
@@ -29,38 +28,38 @@ jobs:
           name: source-code
           path: .
 
-  sign-addon:
+  release-firefox:
+    name: Sign and Release to Firefox Store
     runs-on: ubuntu-latest
     needs: setup
-    permissions:
-      contents: read
     steps:
       - name: Download source code
         uses: actions/download-artifact@v4
         with:
           name: source-code
 
-      - name: Install web-ext
+      - name: Install latest web-ext
         run: npm install -g web-ext@latest
 
-      - name: Sign Firefox Addon
+      - name: Sign and Submit to AMO
         run: >-
           web-ext sign
           --source-dir .
           --api-key "${{ secrets.AMO_API_KEY }}"
           --api-secret "${{ secrets.AMO_API_SECRET }}"
-          --channel unlisted
+          --channel listed
           --timeout 300000
 
-      - name: Upload signed extension
+      - name: Upload signed extension artifact
         uses: actions/upload-artifact@v4
         with:
-          name: signed-extension
+          name: signed-firefox-extension
           path: web-ext-artifacts/
 
-  release:
+  release-github:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [setup, sign-addon]
+    needs: [setup, release-firefox]
     permissions:
       contents: write
     steps:
@@ -68,20 +67,20 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: source-code
-
-      - name: Download signed extension
+      
+      - name: Download signed Firefox extension
         uses: actions/download-artifact@v4
         with:
-          name: signed-extension
-          path: dist/
+          name: signed-firefox-extension
+          path: dist/firefox
 
       - name: Prepare release assets
         run: |
           # Package Chrome extension
-          zip -r extension-chrome.zip . -x ".git/*" ".github/*" "node_modules/*"
+          zip -r extension-chrome.zip . -x ".git/*" ".github/*" "node_modules/*" "dist/*"
 
           # Rename signed Firefox extension
-          mv dist/*.xpi dist/extension-firefox-${{ needs.setup.outputs.VERSION }}.xpi
+          mv dist/firefox/*.xpi dist/extension-firefox-${{ needs.setup.outputs.VERSION }}.xpi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -93,22 +92,3 @@ jobs:
             extension-chrome.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-firefox:
-    name: Publish to Firefox Add-on Store
-    needs: [setup, sign-addon]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download signed extension artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: signed-extension
-          path: web-ext-artifacts
-
-      - name: Install web-ext
-        run: npm install -g web-ext@latest
-
-      - name: Submit to AMO
-        run: |
-          XPI_FILE=$(find web-ext-artifacts -name "*.xpi")
-          web-ext submit --xpi-file "$XPI_FILE" --api-key ${{ secrets.AMO_API_KEY }} --api-secret ${{ secrets.AMO_API_SECRET }}
