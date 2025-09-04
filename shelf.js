@@ -49,7 +49,7 @@ function createVideoCard(video) {
 
     card.querySelector('.remove-btn').addEventListener('click', async (e) => {
         e.stopPropagation();
-        const response = await chrome.runtime.sendMessage({ type: 'REMOVE_VIDEO', videoId: video.videoId });
+        const response = await browser.runtime.sendMessage({ type: 'REMOVE_VIDEO', videoId: video.videoId });
         if (response.success) {
             card.remove();
             checkEmptyState();
@@ -60,7 +60,7 @@ function createVideoCard(video) {
 }
 
 async function loadVideos() {
-    const response = await chrome.runtime.sendMessage({ type: 'GET_ALL_VIDEOS' });
+    const response = await browser.runtime.sendMessage({ type: 'GET_ALL_VIDEOS' });
     const videoList = document.getElementById('video-list');
     
     // Clear previous content
@@ -85,4 +85,3 @@ function checkEmptyState() {
         emptyState.style.display = 'none';
     }
 }
-

@@ -13,41 +13,49 @@ A simple Chrome extension to save YouTube videos to a local, in-browser shelf fo
 *   **In-Browser Shelf:** View all your shelved videos in a clean, YouTube-like interface within a modal overlay.
 *   **Local Storage:** All data is stored securely in your browser's IndexedDB; no cloud sync or external APIs are used.
 
-## Installation (GitHub Release)
+## Installation
 
-The easiest way to install the extension is to download the latest release:
+### For Chrome (Load Unpacked)
 
-1.  Go to the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases) of this repository.
-2.  Download the `extension.zip` file from the latest release.
-3.  Unzip the downloaded file.
-4.  Follow the "Load Unpacked Extension" steps below, selecting the unzipped folder.
-
-## Installation (Load Unpacked Extension)
-
-Since this extension is not published on the Chrome Web Store, you'll need to load it as an "unpacked" extension.
-
-1.  **Download/Clone the Repository:**
-    *   Clone this repository to your local machine:
-        ```bash
-        git clone https://github.com/your-username/youtube-shelf-extension.git
-        ```
-    *   Or, download the ZIP file and extract it.
-
-2.  **Open Chrome Extensions Page:**
+1.  **Download the latest `extension.zip`** from the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
+2.  **Unzip** the downloaded file.
+3.  **Open Chrome Extensions Page:**
     *   Open Google Chrome.
     *   Type `chrome://extensions` in the address bar and press Enter.
-
-3.  **Enable Developer Mode:**
+4.  **Enable Developer Mode:**
     *   In the top-right corner of the Extensions page, toggle on the "Developer mode" switch.
-
-4.  **Load Unpacked:**
+5.  **Load Unpacked:**
     *   Click the "Load unpacked" button that appears.
-    *   A file dialog will open. Navigate to the directory where you cloned/extracted the `youtube-shelf-extension` folder.
-    *   Select the entire `youtube-shelf-extension` folder and click "Select Folder" (or "Open").
-
-5.  **Verify Installation:**
+    *   A file dialog will open. Navigate to the directory where you unzipped the extension.
+    *   Select the entire unzipped folder and click "Select Folder" (or "Open").
+6.  **Verify Installation:**
     *   The "YouTube Shelf" extension should now appear in your list of installed extensions.
     *   You might see a warning about "Developer mode extensions". This is normal for unpacked extensions.
+
+### For Firefox
+
+#### Install from Mozilla Add-ons (Recommended)
+
+The easiest and recommended way to install the extension for Firefox is directly from the Mozilla Add-ons (AMO) website:
+
+1.  Go to the [YouTube Shelf Add-on page on AMO](https://addons.mozilla.org/firefox/addon/youtube-shelf-extension/) (Note: You'll need to replace this with the actual AMO link once published).
+2.  Click the "Add to Firefox" button.
+3.  Follow the prompts to install the extension.
+
+#### Manual Installation (from GitHub Release)
+
+If you prefer to install manually, or for testing purposes:
+
+1.  **Download the latest `extension.xpi`** from the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
+2.  **Open Firefox Add-ons Page:**
+    *   Open Mozilla Firefox.
+    *   Type `about:addons` in the address bar and press Enter.
+3.  **Install Add-on From File:**
+    *   Click the gear icon (⚙️) in the top-right corner of the Add-ons Manager page.
+    *   Select "Install Add-on From File...".
+    *   Navigate to and select the downloaded `extension.xpi` file.
+4.  **Verify Installation:**
+    *   The "YouTube Shelf" extension should now appear in your list of installed extensions.
 
 ## Usage
 

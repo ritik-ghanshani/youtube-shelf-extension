@@ -47,14 +47,14 @@ async function handleShelfButtonClick(videoId) {
     }
 
     // Await the response before updating the button state
-    const response = await chrome.runtime.sendMessage({ type: 'ADD_VIDEO', videoData });
+    const response = await browser.runtime.sendMessage({ type: 'ADD_VIDEO', videoData });
     if (response.success) {
         updateButtonState(true);
     }
 }
 
 async function handleUnshelfButtonClick(videoId) {
-    const response = await chrome.runtime.sendMessage({ type: 'REMOVE_VIDEO', videoId: videoId });
+    const response = await browser.runtime.sendMessage({ type: 'REMOVE_VIDEO', videoId: videoId });
     if (response.success) {
         updateButtonState(false);
     }
@@ -89,9 +89,9 @@ function addShelfButtons() {
     target.prepend(unshelfButton);
     target.prepend(shelfButton);
 
-    chrome.runtime.sendMessage({ type: 'CHECK_VIDEO', videoId: videoId }, (response) => {
-        if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError);
+    browser.runtime.sendMessage({ type: 'CHECK_VIDEO', videoId: videoId }, (response) => {
+        if (browser.runtime.lastError) {
+            console.error(browser.runtime.lastError);
             return;
         }
         updateButtonState(response.isShelved);
@@ -117,7 +117,7 @@ function startTimestampUpdater() {
         const videoElement = document.querySelector('video');
         if (videoElement && !videoElement.paused) {
             const currentTime = Math.floor(videoElement.currentTime);
-            chrome.runtime.sendMessage({
+            browser.runtime.sendMessage({
                 type: 'UPDATE_TIMESTAMP',
                 videoId: videoId,
                 timestamp: currentTime
@@ -154,7 +154,8 @@ function addShelfButtonToHeader() {
     const createButton = target.querySelector('#create-button');
     if (createButton) {
         createButton.insertAdjacentElement('afterend', shelfButton);
-    } else {
+    }
+    else {
         // Fallback to prepend if create button not found
         target.prepend(shelfButton);
     }
@@ -180,7 +181,7 @@ function openShelfModal() {
 
     const iframe = document.createElement('iframe');
     iframe.id = 'shelf-iframe';
-    iframe.src = chrome.runtime.getURL('shelf.html');
+    iframe.src = browser.runtime.getURL('shelf.html');
 
     modalContent.appendChild(closeButton);
     modalContent.appendChild(iframe);
@@ -198,7 +199,7 @@ function closeShelfModal() {
 }
 
 // --- MESSAGE LISTENER FOR STATE SYNC ---
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'UPDATE_BUTTON_STATE') {
         const currentVideoIdOnPage = new URLSearchParams(window.location.search).get('v');
         if (message.videoId === currentVideoIdOnPage) {

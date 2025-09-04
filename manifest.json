@@ -2,44 +2,41 @@
   "manifest_version": 3,
   "name": "YouTube Shelf",
   "version": "1.0.0",
-  "description": "Adds a 'shelf' to save YouTube videos with timestamps to watch later.",
+  "description": "A simple Chrome extension to save YouTube videos to a local, in-browser shelf for later viewing, including the ability to resume from a specific timestamp. This extension was \"vibe coded\" with Gemini.",
   "permissions": ["storage", "tabs"],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["browser-polyfill.js", "background.js"]
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*.youtube.com/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "styles.css"
-      ]
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "shelf.html",
-        "shelf.js"
-      ],
-      "matches": [
-        "*://*.youtube.com/*"
-      ]
+      "resources": ["shelf.html"],
+      "matches": ["https://www.youtube.com/*"]
     }
   ],
-  "action": {
-    "default_title": "YouTube Shelf",
-    "default_popup": "shelf.html"
-  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "shelf.html",
+    "default_title": "Open YouTube Shelf",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "youtube-shelf-extension@ritik-ghanshani.com",
+      "strict_min_version": "109.0"
+    }
   }
 }
-
-

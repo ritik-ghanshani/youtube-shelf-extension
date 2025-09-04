@@ -30,9 +30,9 @@ function getDb() {
 
 // Function to broadcast state changes to relevant tabs
 function broadcastUpdate(videoId, isShelved) {
-    chrome.tabs.query({ url: "*://www.youtube.com/watch*" }, (tabs) => {
+    browser.tabs.query({ url: "*://www.youtube.com/watch*" }, (tabs) => {
         tabs.forEach(tab => {
-            chrome.tabs.sendMessage(tab.id, {
+            browser.tabs.sendMessage(tab.id, {
                 type: 'UPDATE_BUTTON_STATE',
                 videoId: videoId,
                 isShelved: isShelved
@@ -146,7 +146,7 @@ async function updateTimestamp(videoId, timestamp) {
 }
 
 // Listens for messages from content scripts or popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
         case 'ADD_VIDEO':
             addVideo(message.videoData).then(sendResponse);
@@ -169,5 +169,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Return true to indicate that the response is sent asynchronously
     return true;
 });
-
-

@@ -1,1 +1,5 @@
 .gemini
+node_modules/
+package-lock.json
+package.json
+youtube-shelf-extension.xpi

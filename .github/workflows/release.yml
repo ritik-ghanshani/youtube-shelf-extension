@@ -19,10 +19,20 @@ jobs:
       id: get_version
       run: echo "VERSION=$(jq -r .version manifest.json)" >> $GITHUB_OUTPUT
 
+    - name: Copy webextension-polyfill
+      run: cp node_modules/webextension-polyfill/dist/browser-polyfill.js .
+
     - name: Zip extension files
       run: |
-        # Exclude .git, .github, README.md, LICENSE, and .gemini from the zip
-        zip -r extension.zip . -x ".git/*" ".github/*" "README.md" "LICENSE" ".gemini"
+        # Exclude .git, .github, and .gemini from the zip
+        zip -r extension.zip . -x ".git/*" ".github/*" ".gemini"
+        cp extension.zip extension.xpi # Create .xpi for Firefox
+
+    - name: Upload extension.xpi artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: extension-xpi
+        path: extension.xpi
 
     - name: Create GitHub Release
       id: create_release
@@ -33,14 +43,45 @@ jobs:
         body: |
           Automated release of YouTube Shelf Chrome Extension.
           
-          **Installation:**
+          **Installation for Chrome:**
           1. Download `extension.zip` from the assets below.
           2. Unzip the file.
           3. Open Chrome, go to `chrome://extensions`.
           4. Enable "Developer mode".
           5. Click "Load unpacked" and select the unzipped folder.
+
+          **Installation for Firefox:**
+          1. Download `extension.xpi` from the assets below.
+          2. Open Firefox, go to `about:addons`.
+          3. Click the gear icon (⚙️) and select "Install Add-on From File...".
+          4. Select the downloaded `extension.xpi` file.
         draft: false
         prerelease: false
-        files: extension.zip
+        files: |
+          extension.zip
+          extension.xpi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  submit_to_amo:
+    needs: release
+    runs-on: ubuntu-latest
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main' # Trigger on push to main for now
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install web-ext
+      run: npm install -g web-ext
+
+    - name: Submit to AMO
+      run: |
+        web-ext submit --source-dir . --api-key ${{ secrets.AMO_API_KEY }} --api-secret ${{ secrets.AMO_API_SECRET }}
+      env:
+        WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+        WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
