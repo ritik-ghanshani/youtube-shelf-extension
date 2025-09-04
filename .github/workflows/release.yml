@@ -2,86 +2,113 @@ name: Create Extension Release
 
 on:
   push:
-    branches:
-      - main # Trigger on push to main for easy testing
+    tags:
+      - "v*.*.*"
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Update manifest version
+        run: |
+          # Use jq to edit the json file inplace
+          jq --arg ver "${{ steps.get_version.outputs.VERSION }}" '.version = $ver' manifest.json > tmp.$$.json && mv tmp.$$.json manifest.json
+
+      - name: Upload source code artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-code
+          path: .
+
+  sign-addon:
+    runs-on: ubuntu-latest
+    needs: setup
+    permissions:
+      contents: read
+    steps:
+      - name: Download source code
+        uses: actions/download-artifact@v4
+        with:
+          name: source-code
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Sign Firefox Addon
+        run: >-
+          web-ext sign
+          --source-dir .
+          --api-key "${{ secrets.AMO_API_KEY }}"
+          --api-secret "${{ secrets.AMO_API_SECRET }}"
+          --channel listed
+          --timeout 300000
+
+      - name: Upload signed extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-extension
+          path: web-ext-artifacts/
+
   release:
     runs-on: ubuntu-latest
+    needs: [setup, sign-addon]
     permissions:
       contents: write
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Download source code
+        uses: actions/download-artifact@v4
+        with:
+          name: source-code
 
-    - name: Get extension version from manifest.json
-      id: get_version
-      run: echo "VERSION=$(jq -r .version manifest.json)" >> $GITHUB_OUTPUT
+      - name: Download signed extension
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-extension
+          path: dist/
 
-    - name: Copy webextension-polyfill
-      run: cp node_modules/webextension-polyfill/dist/browser-polyfill.js .
+      - name: Prepare release assets
+        run: |
+          # Package Chrome extension
+          zip -r extension-chrome.zip . -x ".git/*" ".github/*" "node_modules/*"
 
-    - name: Zip extension files
-      run: |
-        # Exclude .git, .github, and .gemini from the zip
-        zip -r extension.zip . -x ".git/*" ".github/*" ".gemini"
-        cp extension.zip extension.xpi # Create .xpi for Firefox
+          # Rename signed Firefox extension
+          mv dist/*.xpi dist/extension-firefox-${{ needs.setup.outputs.VERSION }}.xpi
 
-    - name: Upload extension.xpi artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: extension-xpi
-        path: extension.xpi
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.setup.outputs.VERSION }}
+          name: Release v${{ needs.setup.outputs.VERSION }}
+          files: |
+            dist/extension-firefox-${{ needs.setup.outputs.VERSION }}.xpi
+            extension-chrome.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ steps.get_version.outputs.VERSION }}
-        name: Release v${{ steps.get_version.outputs.VERSION }}
-        body: |
-          Automated release of YouTube Shelf Chrome Extension.
-          
-          **Installation for Chrome:**
-          1. Download `extension.zip` from the assets below.
-          2. Unzip the file.
-          3. Open Chrome, go to `chrome://extensions`.
-          4. Enable "Developer mode".
-          5. Click "Load unpacked" and select the unzipped folder.
-
-          **Installation for Firefox:**
-          1. Download `extension.xpi` from the assets below.
-          2. Open Firefox, go to `about:addons`.
-          3. Click the gear icon (⚙️) and select "Install Add-on From File...".
-          4. Select the downloaded `extension.xpi` file.
-        draft: false
-        prerelease: false
-        files: |
-          extension.zip
-          extension.xpi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  submit_to_amo:
-    needs: release
+  publish-firefox:
+    name: Publish to Firefox Add-on Store
+    needs: [setup, sign-addon]
     runs-on: ubuntu-latest
-    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main' # Trigger on push to main for now
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Download signed extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-extension
+          path: web-ext-artifacts
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Install web-ext
+        run: npm install -g web-ext
 
-    - name: Install web-ext
-      run: npm install -g web-ext
-
-    - name: Submit to AMO
-      run: |
-        web-ext submit --source-dir . --api-key ${{ secrets.AMO_API_KEY }} --api-secret ${{ secrets.AMO_API_SECRET }}
-      env:
-        WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
-        WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+      - name: Submit to AMO
+        run: |
+          XPI_FILE=$(find web-ext-artifacts -name "*.xpi")
+          web-ext submit --xpi-file "$XPI_FILE" --api-key ${{ secrets.AMO_API_KEY }} --api-secret ${{ secrets.AMO_API_SECRET }}
