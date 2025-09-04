@@ -15,47 +15,40 @@ A simple Chrome extension to save YouTube videos to a local, in-browser shelf fo
 
 ## Installation
 
-### For Chrome (Load Unpacked)
+There are several ways to install YouTube Shelf, depending on your browser and preference.
 
-1.  **Download the latest `extension.zip`** from the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
-2.  **Unzip** the downloaded file.
-3.  **Open Chrome Extensions Page:**
-    *   Open Google Chrome.
-    *   Type `chrome://extensions` in the address bar and press Enter.
-4.  **Enable Developer Mode:**
-    *   In the top-right corner of the Extensions page, toggle on the "Developer mode" switch.
-5.  **Load Unpacked:**
-    *   Click the "Load unpacked" button that appears.
-    *   A file dialog will open. Navigate to the directory where you unzipped the extension.
-    *   Select the entire unzipped folder and click "Select Folder" (or "Open").
-6.  **Verify Installation:**
-    *   The "YouTube Shelf" extension should now appear in your list of installed extensions.
-    *   You might see a warning about "Developer mode extensions". This is normal for unpacked extensions.
+### Chrome
 
-### For Firefox
+The only way to install the extension on Chrome is to load it as an unpacked extension.
 
-#### Install from Mozilla Add-ons (Recommended)
+1.  **Download `extension-chrome.zip`** from the latest [GitHub Release](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
+2.  **Unzip** the downloaded file into a permanent folder on your computer.
+3.  Open Chrome and navigate to `chrome://extensions`.
+4.  Enable **Developer mode** using the toggle in the top-right corner.
+5.  Click the **Load unpacked** button.
+6.  Select the unzipped folder that you created in step 2.
+7.  The "YouTube Shelf" extension will now be installed.
 
-The easiest and recommended way to install the extension for Firefox is directly from the Mozilla Add-ons (AMO) website:
+### Firefox
 
-1.  Go to the [YouTube Shelf Add-on page on AMO](https://addons.mozilla.org/firefox/addon/youtube-shelf-extension/) (Note: You'll need to replace this with the actual AMO link once published).
-2.  Click the "Add to Firefox" button.
-3.  Follow the prompts to install the extension.
+You have two options for installing on Firefox.
 
-#### Manual Installation (from GitHub Release)
+#### Option 1: From Mozilla Add-on Store (Recommended)
 
-If you prefer to install manually, or for testing purposes:
+This is the easiest and most secure method. The extension has been reviewed and approved by Mozilla.
 
-1.  **Download the latest `extension.xpi`** from the [Releases page](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
-2.  **Open Firefox Add-ons Page:**
-    *   Open Mozilla Firefox.
-    *   Type `about:addons` in the address bar and press Enter.
-3.  **Install Add-on From File:**
-    *   Click the gear icon (⚙️) in the top-right corner of the Add-ons Manager page.
-    *   Select "Install Add-on From File...".
-    *   Navigate to and select the downloaded `extension.xpi` file.
-4.  **Verify Installation:**
-    *   The "YouTube Shelf" extension should now appear in your list of installed extensions.
+1.  Visit the **[YouTube Shelf page on the Mozilla Add-on Store](https://addons.mozilla.org/firefox/addon/youtube-shelf-extension/)**. (Note: This link will be active once the first version is approved).
+2.  Click the **"Add to Firefox"** button and follow the prompts.
+
+#### Option 2: From GitHub (for the latest version)
+
+The GitHub Release version is signed by Mozilla but may be newer than the version on the store, pending review.
+
+1.  **Download `extension-firefox-x.x.x.xpi`** from the latest [GitHub Release](https://github.com/ritik-ghanshani/youtube-shelf-extension/releases).
+2.  Open Firefox and navigate to `about:addons`.
+3.  Click the gear icon (⚙️) in the top-right corner and select **Install Add-on From File...**.
+4.  Select the `.xpi` file you downloaded.
+5.  The "YouTube Shelf" extension will now be installed.
 
 ## Usage
 
