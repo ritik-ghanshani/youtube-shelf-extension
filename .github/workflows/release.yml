@@ -110,9 +110,24 @@ jobs:
       - name: Submit to AMO (Listed Channel)
         run: |
           XPI_FILE=$(find web-ext-artifacts -name "*.xpi")
-                    web-ext sign \
-            --xpi-file "$XPI_FILE"
-            --api-key "${{ secrets.AMO_API_KEY }}"
-            --api-secret "${{ secrets.AMO_API_SECRET }}"
-            --channel listed
-            --timeout 30000 # Short timeout, as this will likely hang
+          set +e # Disable exit on error for this block
+          OUTPUT=$(web-ext sign \
+            --xpi-file "$XPI_FILE" \
+            --api-key "${{ secrets.AMO_API_KEY }}" \
+            --api-secret "${{ secrets.AMO_API_SECRET }}" \
+            --channel listed \
+            --timeout 30000 2>&1) # Capture stderr as well
+          EXIT_CODE=$?
+          set -e # Re-enable exit on error
+
+          echo "$OUTPUT" # Always print the output for debugging
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            if echo "$OUTPUT" | grep -q "WebExtError: Approval: timeout exceeded"; then
+              echo "::warning::Submission timed out, but was likely successful. Check AMO dashboard."
+              exit 0 # Exit with success
+            else
+              echo "::error::Submission failed with unexpected error."
+              exit $EXIT_CODE # Exit with original error code
+            fi
+          fi
