@@ -48,7 +48,7 @@ jobs:
           --api-key "${{ secrets.AMO_API_KEY }}"
           --api-secret "${{ secrets.AMO_API_SECRET }}"
           --channel listed
-          --timeout 300000
+          --timeout 30000
 
       - name: Upload signed extension artifact
         uses: actions/upload-artifact@v4
